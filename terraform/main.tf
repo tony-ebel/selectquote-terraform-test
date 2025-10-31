@@ -13,6 +13,7 @@ module "web" {
   ecs_container_count = var.ecs_container_count
   ecs_container_image = var.ecs_container_image
   internal_sg_id      = module.internal.internal_sg_id
+  internal_port       = var.internal_port
 
   depends_on = [
     module.vpc
@@ -30,6 +31,7 @@ module "internal" {
   rocket_league_image = "${aws_ecr_repository.rocket_league.repository_url}/internal:latest"
   ssh_public_key      = var.ssh_public_key
   web_sg_id           = module.web.web_sg_id
+  port                = var.internal_port
 
   depends_on = [
     module.vpc

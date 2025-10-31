@@ -34,6 +34,12 @@ variable "internal_instance_type" {
   default     = "t3.small"
 }
 
+variable "internal_port" {
+  type        = number
+  description = "Port the internal RL service listens on"
+  default     = 8500
+}
+
 variable "ssh_public_key" {
   type        = string
   description = "Public SSH Key used to connect to internal EC2 instances"

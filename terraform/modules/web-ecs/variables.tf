@@ -28,3 +28,8 @@ variable "internal_sg_id" {
   type        = string
   description = "internal EC2 security group id to allow egress"
 }
+
+variable "internal_port" {
+  type        = number
+  description = "port the internal rocket league instance listens on"
+}

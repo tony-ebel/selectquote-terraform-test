@@ -137,8 +137,8 @@ resource "aws_security_group_rule" "web_ingress" {
 
   type        = "ingress"
   protocol    = "tcp"
-  from_port   = 80
-  to_port     = 80
+  from_port   = var.port
+  to_port     = var.port
   description = "Allow HTTP from web sg"
 
   source_security_group_id = var.web_sg_id

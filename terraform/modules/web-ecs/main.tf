@@ -157,8 +157,8 @@ resource "aws_security_group_rule" "internal_egress" {
 
   type        = "egress"
   protocol    = "tcp"
-  from_port   = 80
-  to_port     = 80
+  from_port   = var.internal_port
+  to_port     = var.internal_port
   description = "Allow HTTP to internal sg"
 
   source_security_group_id = var.internal_sg_id

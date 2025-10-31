@@ -23,6 +23,11 @@ variable "instance_type" {
   description = "instance type to use for EC2 instances"
 }
 
+variable "port" {
+  type        = number
+  description = "port the rocket league internal instance listens on"
+}
+
 variable "rocket_league_image" {
   type        = string
   description = "ecr rocket league internal image"
