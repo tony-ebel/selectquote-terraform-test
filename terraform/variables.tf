@@ -16,6 +16,18 @@ variable "ecs_container_count" {
   default     = 2
 }
 
+variable "ecs_container_port" {
+  type        = number
+  description = "Port the ecs web containers will listen on"
+  default     = 8500
+}
+
+variable "ecs_health_check_path" {
+  type        = string
+  description = "Path the ecs containers will listen for health checks"
+  default     = "/status.html"
+}
+
 variable "internal_instance_count" {
   type        = number
   description = "Number of internal EC2 instances"

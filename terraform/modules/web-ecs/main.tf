@@ -70,8 +70,8 @@ resource "aws_ecs_task_definition" "web" {
       essential = true
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = var.ecs_container_port
+          hostPort      = var.ecs_container_port
         }
       ]
       logConfiguration = {
@@ -105,6 +105,12 @@ resource "aws_ecs_service" "web" {
     assign_public_ip = true
   }
 
+  load_balancer {
+    target_group_arn = var.target_group_arn
+    container_name   = "web-container"
+    container_port   = var.ecs_container_port
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.ecs_task_execution
   ]
@@ -125,7 +131,7 @@ resource "aws_security_group" "web" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "web-http" {
+resource "aws_vpc_security_group_ingress_rule" "web_http" {
   security_group_id = aws_security_group.web.id
 
   cidr_ipv4   = "0.0.0.0/0"
@@ -134,7 +140,7 @@ resource "aws_vpc_security_group_ingress_rule" "web-http" {
   to_port     = 80
 }
 
-resource "aws_vpc_security_group_ingress_rule" "web-https" {
+resource "aws_vpc_security_group_ingress_rule" "web_https" {
   security_group_id = aws_security_group.web.id
 
   cidr_ipv4   = "0.0.0.0/0"
@@ -150,6 +156,18 @@ resource "aws_vpc_security_group_ingress_rule" "ssh" {
   ip_protocol = "tcp"
   from_port   = 22
   to_port     = 22
+}
+
+resource "aws_security_group_rule" "alb_ingress" {
+  security_group_id = aws_security_group.web.id
+
+  type        = "ingress"
+  protocol    = "tcp"
+  from_port   = var.ecs_container_port
+  to_port     = var.ecs_container_port
+  description = "Allow HTTP from alb sg"
+
+  source_security_group_id = var.alb_sg_id
 }
 
 resource "aws_security_group_rule" "internal_egress" {
