@@ -151,3 +151,15 @@ resource "aws_vpc_security_group_ingress_rule" "ssh" {
   from_port   = 22
   to_port     = 22
 }
+
+resource "aws_security_group_rule" "internal_egress" {
+  security_group_id = aws_security_group.web.id
+
+  type        = "egress"
+  protocol    = "tcp"
+  from_port   = 80
+  to_port     = 80
+  description = "Allow HTTP to internal sg"
+
+  source_security_group_id = var.internal_sg_id
+}

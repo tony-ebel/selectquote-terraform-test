@@ -23,3 +23,8 @@ variable "public_subnet_ids" {
   type        = list(string)
   description = "public subnet ids for ECS conatainers"
 }
+
+variable "internal_sg_id" {
+  type        = string
+  description = "internal EC2 security group id to allow egress"
+}

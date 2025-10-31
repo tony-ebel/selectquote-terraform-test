@@ -1,0 +1,29 @@
+variant: flatcar
+version: 1.0.0
+
+systemd:
+  units:
+    - name: docker.service
+      enabled: true
+
+    - name: rocket-league.service
+      enabled: true
+      contents: |
+        [Unit]
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        Environment="IMAGE=${IMAGE}"
+        ExecStartPre=-/usr/bin/docker pull $${IMAGE}
+        ExecStartPre=-/usr/bin/docker rm -fv %p
+        ExecStart=/usr/bin/docker run \
+                                  --name %p \
+                                  --net host \
+                                  $${IMAGE}
+
+        ExecStop=/usr/bin/docker stop %p
+        TimeoutStartSec=180
+
+        [Install]
+        RequiredBy=multi-user.target
