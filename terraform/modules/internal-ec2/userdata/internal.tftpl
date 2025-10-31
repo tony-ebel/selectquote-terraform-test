@@ -10,16 +10,18 @@ systemd:
       enabled: true
       contents: |
         [Unit]
-        After=docker.service
-        Requires=docker.service
+        After=docker.service ecr-docker-login.service
+        Requires=docker.service ecr-docker-login.serivce
 
         [Service]
         Environment="IMAGE=${IMAGE}"
+        Environment="ENVIRONMENT=${ENVIRONMENT}"
         ExecStartPre=-/usr/bin/docker pull $${IMAGE}
         ExecStartPre=-/usr/bin/docker rm -fv %p
         ExecStart=/usr/bin/docker run \
                                   --name %p \
                                   --net host \
+                                  -e ENVIRONMENT=$${ENVIRONMENT} \
                                   $${IMAGE}
 
         ExecStop=/usr/bin/docker stop %p
@@ -27,3 +29,29 @@ systemd:
 
         [Install]
         RequiredBy=multi-user.target
+
+    - name: ecr-docker-login.service
+      contents: |
+        [Unit]
+        Description=log into ecr to pull docker images
+        Documentation=file://opt/bin/ecr-docker-login.sh
+        After=docker.service network-online.target
+        Requires=docker.service network-online.target
+
+        [Service]
+        Type=oneshot
+        ExecStart=/opt/bin/ecr-docker-login.sh
+
+storage:
+  files:
+    - path: /opt/bin/ecr-docker-login.sh
+      mode: 0744
+      contents:
+        inline: |
+          #!/bin/bash
+
+          aws ecr get-login-password --region ${REGION} | \
+          docker login \
+            --username AWS \
+            --password-stdin \
+            ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com

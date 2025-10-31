@@ -1,0 +1,21 @@
+[project]
+name = "rocket-league-internal"
+version = "1.0.0"
+description = "Rocket League internal"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Tony Ebel", email = "tonyebel123@gmail.com" }
+]
+dependencies = [
+    "flask>=3.1.2",
+    "gunicorn>=23.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.0",
+]
+
+[tool.ruff]
+line-length = 120

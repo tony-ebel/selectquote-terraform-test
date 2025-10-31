@@ -28,7 +28,7 @@ module "internal" {
   private_subnet_id   = module.vpc.private_subnet_id
   instance_count      = var.internal_instance_count
   instance_type       = var.internal_instance_type
-  rocket_league_image = "${aws_ecr_repository.rocket_league.repository_url}/internal:latest"
+  rocket_league_image = "${aws_ecr_repository.rocket_league_internal.repository_url}:latest"
   ssh_public_key      = var.ssh_public_key
   web_sg_id           = module.web.web_sg_id
   port                = var.internal_port

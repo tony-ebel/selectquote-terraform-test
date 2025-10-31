@@ -73,6 +73,10 @@ resource "aws_iam_instance_profile" "internal" {
 # User Data #
 #############
 
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
 data "ct_config" "internal" {
   content      = data.template_file.internal.rendered
   strict       = true
@@ -83,7 +87,10 @@ data "template_file" "internal" {
   template = file("${path.module}/userdata/internal.tftpl")
 
   vars = {
-    IMAGE = var.rocket_league_image
+    IMAGE          = var.rocket_league_image
+    ENVIRONMENT    = "prod"
+    AWS_ACCOUNT_ID = data.aws_caller_identity.current.account_id
+    REGION         = data.aws_region.current.region
   }
 }
 
