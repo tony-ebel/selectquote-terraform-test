@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "web" {
   container_definitions = jsonencode([
     {
       name      = "web-container"
-      image     = var.ecs_container_image
+      image     = var.rocket_league_image
       cpu       = 256
       memory    = 512
       essential = true

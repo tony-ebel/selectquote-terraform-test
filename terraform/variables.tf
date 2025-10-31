@@ -16,12 +16,6 @@ variable "ecs_container_count" {
   default     = 2
 }
 
-variable "ecs_container_image" {
-  type        = string
-  description = "Image for ECS containers to run on"
-  default     = "nginx:latest"
-}
-
 variable "internal_instance_count" {
   type        = number
   description = "Number of internal EC2 instances"

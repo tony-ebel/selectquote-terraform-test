@@ -11,7 +11,7 @@ module "web" {
   vpc_cidr            = var.vpc_cidr
   public_subnet_ids   = module.vpc.public_subnet_ids
   ecs_container_count = var.ecs_container_count
-  ecs_container_image = var.ecs_container_image
+  rocket_league_image = "${aws_ecr_repository.rocket_league_web.repository_url}:latest"
   internal_sg_id      = module.internal.internal_sg_id
   internal_port       = var.internal_port
 

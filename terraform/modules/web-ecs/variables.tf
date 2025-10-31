@@ -14,9 +14,9 @@ variable "ecs_container_count" {
   default     = 2
 }
 
-variable "ecs_container_image" {
+variable "rocket_league_image" {
   type        = string
-  description = "Image for ECS containers to run on"
+  description = "RL Image for ECS containers to run on"
 }
 
 variable "public_subnet_ids" {
