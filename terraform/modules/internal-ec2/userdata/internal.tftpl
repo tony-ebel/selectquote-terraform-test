@@ -50,7 +50,9 @@ storage:
         inline: |
           #!/bin/bash
 
-          aws ecr get-login-password --region ${REGION} | \
+          docker pull amazon/aws-cli:latest
+
+          docker run --rm -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password --region ${REGION} | \
           docker login \
             --username AWS \
             --password-stdin \
