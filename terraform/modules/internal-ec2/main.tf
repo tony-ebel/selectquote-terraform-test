@@ -157,3 +157,12 @@ resource "aws_security_group_rule" "web_ingress" {
 
   source_security_group_id = var.web_sg_id
 }
+
+resource "aws_vpc_security_group_egress_rule" "https" {
+  security_group_id = aws_security_group.internal.id
+
+  cidr_ipv4   = var.vpc_cidr
+  ip_protocol = "tcp"
+  from_port   = 443
+  to_port     = 443
+}

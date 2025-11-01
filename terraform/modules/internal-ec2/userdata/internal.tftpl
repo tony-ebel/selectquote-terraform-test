@@ -11,7 +11,7 @@ systemd:
       contents: |
         [Unit]
         After=docker.service ecr-docker-login.service
-        Requires=docker.service ecr-docker-login.serivce
+        Requires=docker.service ecr-docker-login.service
 
         [Service]
         Environment="IMAGE=${IMAGE}"
@@ -28,7 +28,7 @@ systemd:
         TimeoutStartSec=180
 
         [Install]
-        RequiredBy=multi-user.target
+        WantedBy=multi-user.target
 
     - name: ecr-docker-login.service
       contents: |
