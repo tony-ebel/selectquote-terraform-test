@@ -49,6 +49,15 @@ systemd:
 
 storage:
   files:
+    - path: /etc/flatcar/update.conf
+      overwrite: true
+      contents:
+        inline: |
+          REBOOT_STRATEGY=reboot
+          LOCKSMITHD_REBOOT_WINDOW_START="Thu 04:00"
+          LOCKSMITHD_REBOOT_WINDOW_LENGTH=1h
+      mode: 0420
+
     - path: /opt/bin/ecr-docker-login.sh
       mode: 0744
       contents:
