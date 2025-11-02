@@ -133,21 +133,21 @@ locals {
   }
 }
 
-resource "aws_vpc_endpoint" "ssm_endpoint" {
+resource "aws_vpc_endpoint" "endpoints" {
   for_each = local.services
 
   vpc_id              = aws_vpc.main.id
   service_name        = each.value.name
   vpc_endpoint_type   = "Interface"
-  security_group_ids  = [aws_security_group.ssm_https.id]
+  security_group_ids  = [aws_security_group.endpoints_https.id]
   private_dns_enabled = true
   ip_address_type     = "ipv4"
   subnet_ids          = [aws_subnet.private_subnet.id]
 }
 
-resource "aws_security_group" "ssm_https" {
-  name        = "allow-ssm"
-  description = "Allow SSM traffic"
+resource "aws_security_group" "endpoints_https" {
+  name        = "allow-endpoint-https"
+  description = "Allow HTTPS traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
