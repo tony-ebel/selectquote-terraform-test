@@ -73,6 +73,10 @@ resource "aws_ecs_task_definition" "web" {
         {
           name  = "INTERNAL_ENDPOINT"
           value = var.internal_dns_record
+        },
+        {
+          name  = "INTERNAL_PORT"
+          value = var.internal_port
         }
       ]
 
