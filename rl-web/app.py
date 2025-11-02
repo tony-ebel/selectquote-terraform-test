@@ -1,4 +1,7 @@
 from flask import Flask
+import os
+
+internal_endpoint = os.getenv("INTERNAL_ENDPOINT")
 
 app = Flask(__name__)
 
