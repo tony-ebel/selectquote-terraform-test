@@ -101,49 +101,24 @@ data "template_file" "internal" {
 
 
 #######
-# ASG #
+# EC2 #
 #######
 
-resource "aws_launch_template" "internal" {
-  name_prefix   = "internal-"
-  image_id      = data.aws_ami.flatcar.image_id
-  instance_type = var.instance_type
-  key_name      = aws_key_pair.ssh.key_name
-  user_data     = base64encode(data.ct_config.internal.rendered)
+resource "aws_instance" "internal" {
+  count = var.instance_count
 
+  instance_type        = var.instance_type
+  ami                  = data.aws_ami.flatcar.image_id
+  user_data            = data.ct_config.internal.rendered
+  iam_instance_profile = aws_iam_instance_profile.internal.name
+  key_name             = aws_key_pair.ssh.key_name
+
+  associate_public_ip_address = false
+  subnet_id                   = var.private_subnet_id
   vpc_security_group_ids      = [aws_security_group.internal.id]
 
-  network_interfaces {
-    associate_public_ip_address = false
-  }
-
-  tag_specifications {
-    resource_type = "instance"
-    tags = {
-      Name = "internal"
-    }
-  }
-}
-
-resource "aws_autoscaling_group" "internal" {
-  name = "internal-asg"
-
-  max_size            = var.instance_count
-  min_size            = var.instance_count
-  desired_capacity    = var.instance_count
-  vpc_zone_identifier = [var.private_subnet_id]
-
-  launch_template {
-    id      = aws_launch_template.internal.id
-    version = "$Latest"
-  }
-
-  health_check_type = "EC2"
-
-  tag {
-    key                 = "Name"
-    value               = "internal"
-    propagate_at_launch = true
+  tags = {
+    Name = "internal-${count.index}"
   }
 }
 

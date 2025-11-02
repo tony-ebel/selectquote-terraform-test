@@ -24,7 +24,7 @@ module "web" {
 }
 
 module "internal" {
-  source = "./modules/internal-asg"
+  source = "./modules/internal-ec2"
 
   vpc_id              = module.vpc.vpc_id
   vpc_cidr            = var.vpc_cidr
