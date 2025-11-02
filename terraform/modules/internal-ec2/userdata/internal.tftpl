@@ -31,16 +31,21 @@ systemd:
         WantedBy=multi-user.target
 
     - name: ecr-docker-login.service
+      enabled: true
       contents: |
         [Unit]
-        Description=log into ecr to pull docker images
+        Description=setup docker-credential-ecr-login helper
         Documentation=file://opt/bin/ecr-docker-login.sh
         After=docker.service network-online.target
         Requires=docker.service network-online.target
+        ConditionPathExists=!/opt/bin/docker-credential-ecr-login
 
         [Service]
         Type=oneshot
         ExecStart=/opt/bin/ecr-docker-login.sh
+
+        [Install]
+        WantedBy=multi-user.target
 
 storage:
   files:
@@ -49,11 +54,25 @@ storage:
       contents:
         inline: |
           #!/bin/bash
+          VERSION=0.10.1
+          OS=linux
+          ARCH=amd64
+          FILEPATH=/opt/bin/docker-credential-ecr-login
 
-          docker pull amazon/aws-cli:latest
+          curl -fsSLo $${FILEPATH}"https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/$${VERSION}/$${OS}-$${ARCH}/docker-credential-ecr-login
+          chmod 744 $${FILEPATH}
 
-          docker run --rm -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password --region ${REGION} | \
-          docker login \
-            --username AWS \
-            --password-stdin \
-            ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+    - path: /etc/systemd/system.conf.d/10-default-env.conf
+      mode: 0644
+      contents:
+        inline: |
+          [Manager]
+          DefaultEnvironment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bin
+
+    - path: /root/.docker/config
+      mode: 0644
+      contents:
+        inline: |
+          {
+            "credsStore": "ecr-login"
+          }
