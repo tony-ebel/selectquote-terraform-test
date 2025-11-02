@@ -166,3 +166,25 @@ resource "aws_vpc_security_group_egress_rule" "https" {
   from_port   = 443
   to_port     = 443
 }
+
+
+###########
+# Route53 #
+###########
+
+resource "aws_route53_zone" "internal" {
+  name    = "${data.aws_caller_identity.current.account_id}.com"
+  comment = "Internal RL zone"
+
+  vpc {
+    vpc_id = var.vpc_id
+  }
+}
+
+resource "aws_route53_record" "internal" {
+  zone_id = aws_route53_zone.internal.zone_id
+  name    = "instances.${data.aws_caller_identity.current.account_id}.com"
+  type    = "A"
+  ttl     = 30
+  records = aws_instance.internal[*].private_ip
+}

@@ -49,3 +49,8 @@ variable "internal_port" {
   type        = number
   description = "port the internal rocket league instance listens on"
 }
+
+variable "internal_dns_record" {
+  type        = string
+  description = "dns record to reach internal ec2 instances"
+}

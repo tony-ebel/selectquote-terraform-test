@@ -68,12 +68,21 @@ resource "aws_ecs_task_definition" "web" {
       cpu       = 256
       memory    = 512
       essential = true
+
+      environment = [
+        {
+          name  = "INTERNAL_ENDPOINT"
+          value = var.internal_dns_record
+        }
+      ]
+
       portMappings = [
         {
           containerPort = var.ecs_container_port
           hostPort      = var.ecs_container_port
         }
       ]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {

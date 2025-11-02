@@ -17,6 +17,7 @@ module "web" {
   target_group_arn    = module.alb.target_group_arn
   internal_sg_id      = module.internal.internal_sg_id
   internal_port       = var.internal_port
+  internal_dns_record = module.internal.internal_dns_record
 
   depends_on = [
     module.vpc
