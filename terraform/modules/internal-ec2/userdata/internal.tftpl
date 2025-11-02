@@ -59,7 +59,7 @@ storage:
           ARCH=amd64
           FILEPATH=/opt/bin/docker-credential-ecr-login
 
-          curl -fsSLo $${FILEPATH}"https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/$${VERSION}/$${OS}-$${ARCH}/docker-credential-ecr-login
+          curl -fsSLo $${FILEPATH} "https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/$${VERSION}/$${OS}-$${ARCH}/docker-credential-ecr-login"
           chmod 744 $${FILEPATH}
 
     - path: /etc/systemd/system.conf.d/10-default-env.conf

@@ -124,6 +124,12 @@ locals {
     "ssmmessages" : {
       "name" : "com.amazonaws.${data.aws_region.current.region}.ssmmessages"
     }
+    "s3" : {
+      "name" : "com.amazonaws.${data.aws_region.current.region}.s3"
+    }
+    "ecr" : {
+      "name" : "com.amazonaws.${data.aws_region.current.region}.ecr.dkr"
+    }
   }
 }
 
