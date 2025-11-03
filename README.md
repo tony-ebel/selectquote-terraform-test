@@ -37,7 +37,7 @@ are allowed to merge into `main`.
 
 
 #### Deployments
-The deployments for the EC2 instances are handled by a Github Action [here](.github/workflows/rl-interal-deploy.yml).
+The deployments for the EC2 instances are handled by a Github Action [here](.github/workflows/rl-internal-deploy.yml).
 
 - prod: semver tags created
 
@@ -55,5 +55,4 @@ pass before merges are allowed into `main`.
 #### Deployments
 Deployments are manged by a Github Actions Workflow [here](.github/workflows/terraform-apply.yml)
 
-*Note*: terraform deployments are done manually by triggering the workflow and
-only run against the `main` branch.
+- prod: merges into `main`
