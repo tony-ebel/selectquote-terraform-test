@@ -76,8 +76,9 @@ jobs:
         with:
           push: true
           context: ./rl-internal
+          tags: ${{ env.IMAGE_NAME }}
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}
-          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}
+          cache-to: type=inline
 
       - name: Deploy to EC2
         run: |
