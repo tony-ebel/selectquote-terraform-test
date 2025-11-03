@@ -79,7 +79,7 @@ jobs:
         with:
           push: true
           context: ./rl-web
-          tag: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_NAME }}
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}
           cache-to: type=inline
 
