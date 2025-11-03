@@ -76,7 +76,7 @@ resource "aws_ecs_task_definition" "web" {
         },
         {
           name  = "INTERNAL_PORT"
-          value = var.internal_port
+          value = tostring(var.internal_port)
         }
       ]
 
@@ -118,11 +118,11 @@ resource "aws_ecs_service" "web" {
     assign_public_ip = true
   }
 
-  load_balancer {
-    target_group_arn = var.target_group_arn
-    container_name   = "web-container"
-    container_port   = var.ecs_container_port
-  }
+  #load_balancer {
+    #target_group_arn = var.target_group_arn
+    #container_name   = "web-container"
+    #container_port   = var.ecs_container_port
+  #}
 
   depends_on = [
     aws_iam_role_policy_attachment.ecs_task_execution
