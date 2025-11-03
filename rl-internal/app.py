@@ -5,7 +5,14 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Connected to the internal Rocket League server!"
+    kickoff_message = """
+    Connected to the internal Rocket League server!
+
+    Reminder of the unwritten rules:
+    Rule 0: try and keep the ball up when game clock is 0
+    Rule 1: do not break a deadlock between two cars
+    """
+    return kickoff_message
 
 
 @app.route("/status.html")
