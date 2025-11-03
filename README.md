@@ -55,4 +55,4 @@ pass before merges are allowed into `main`.
 #### Deployments
 Deployments are manged by a Github Actions Workflow [here](.github/workflows/terraform-apply.yml)
 
-- prod: semver tags created
+- prod: merges into `main`
