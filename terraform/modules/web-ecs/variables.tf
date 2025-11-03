@@ -20,20 +20,9 @@ variable "ecs_container_port" {
   default     = 8500
 }
 
-variable "ecs_healthcheck_path" {
-  type        = string
-  description = "healthcheck path endpoint for container"
-  default     = "/status.html"
-}
-
 variable "rocket_league_image" {
   type        = string
   description = "RL Image for ECS containers to run on"
-}
-
-variable "target_group_arn" {
-  type        = string
-  description = "alb target group to associate the ecs containers with"
 }
 
 variable "public_subnet_ids" {
