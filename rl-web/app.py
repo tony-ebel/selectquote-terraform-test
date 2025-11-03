@@ -2,9 +2,10 @@ from flask import Flask, Response
 import requests
 import os
 
-internal_endpoint = f'http://{os.getenv("INTERNAL_ENDPOINT")}:{os.getenv("INTERNAL_PORT")}'
+internal_endpoint = f"http://{os.getenv('INTERNAL_ENDPOINT')}:{os.getenv('INTERNAL_PORT')}"
 
 app = Flask(__name__)
+
 
 def stream_response():
     yield "Initial connection established. Backend handshake pending...\n"
@@ -39,7 +40,8 @@ def stream_response():
 
 @app.route("/")
 def index():
-    return Response(stream_response(), mimetype='text/plain')
+    return Response(stream_response(), mimetype="text/plain")
+
 
 @app.route("/status.html")
 def status():
