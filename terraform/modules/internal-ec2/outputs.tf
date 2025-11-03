@@ -12,3 +12,8 @@ output "ssh_private_key_pem" {
   description = "private ssh key to connect to instances"
   value       = tls_private_key.main.private_key_pem
 }
+
+output "internal_instance_ids" {
+  description = "internal instance ids used for deploys"
+  value       = join(" ", aws_instance.internal[*].id)
+}
