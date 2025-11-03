@@ -35,6 +35,11 @@ variable "alb_sg_id" {
   description = "alb security group id to allow ingress"
 }
 
+variable "target_group_arn" {
+  type        = string
+  description = "alb target group arn for web ecs containers to use"
+}
+
 variable "internal_sg_id" {
   type        = string
   description = "internal EC2 security group id to allow egress"

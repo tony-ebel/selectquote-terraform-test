@@ -14,6 +14,7 @@ module "web" {
   ecs_container_port  = var.ecs_container_port
   rocket_league_image = "${aws_ecr_repository.rocket_league_web.repository_url}:latest"
   alb_sg_id           = module.alb.alb_sg_id
+  target_group_arn    = module.alb.target_group_arn
   internal_sg_id      = module.internal.internal_sg_id
   internal_port       = var.internal_port
   internal_dns_record = module.internal.internal_dns_record
