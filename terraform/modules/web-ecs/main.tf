@@ -19,7 +19,7 @@ resource "aws_ecs_cluster" "web" {
 resource "aws_iam_role" "ecs_task_execution" {
   name = "ecs-task-execution"
 
-  assume_role_policy = jsonencode ({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -54,12 +54,12 @@ resource "aws_cloudwatch_log_group" "web_container" {
 ###################
 
 resource "aws_ecs_task_definition" "web" {
-  family                = "web-task"
-  cpu                   = "256"
-  memory                = "512"
-  network_mode          = "awsvpc"
+  family                   = "web-task"
+  cpu                      = "256"
+  memory                   = "512"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn    = aws_iam_role.ecs_task_execution.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 
   container_definitions = jsonencode([
     {
@@ -119,9 +119,9 @@ resource "aws_ecs_service" "web" {
   }
 
   #load_balancer {
-    #target_group_arn = var.target_group_arn
-    #container_name   = "web-container"
-    #container_port   = var.ecs_container_port
+  #target_group_arn = var.target_group_arn
+  #container_name   = "web-container"
+  #container_port   = var.ecs_container_port
   #}
 
   depends_on = [

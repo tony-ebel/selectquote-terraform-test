@@ -126,7 +126,7 @@ resource "aws_instance" "internal" {
   }
 
   lifecycle {
-    ignore_changes = [ ami ]
+    ignore_changes = [ami]
   }
 }
 

@@ -1,0 +1,92 @@
+name: RL Internal Deploy
+
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+env:
+  IMAGE_NAME: 146663730447.dkr.ecr.us-west-2.amazonaws.com/rocket-league-internal:latest
+
+jobs:
+  get-ec2:
+    name: Retrive EC2 Details Managed by Terraform
+    outputs:
+      instanceids: ${{ steps.getdetails.outputs.instanceids }}
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Creds
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.13.4"
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Get EC2 Details
+        id: getdetails
+        run: |
+          instanceids=$(tofu output -raw internal_instance_ids)
+          echo "instanceids=${instanceids}" >> $GITHUB_OUTPUT
+
+  deploy-ec2:
+    name: Build rl-internal Image and Deploy
+    needs: [get-ec2]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Creds
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Docker Build & Push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: ./rl-internal
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}
+          cache-to: type=registry,ref=${{ env.IMAGE_NAME }}
+
+      - name: Deploy to EC2
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --instance-ids ${{ needs.get-ec2.outputs.instanceids }} \
+            --parameters 'commands=["sudo systemctl restart rocket-league.service"]' \
+            --comment "Deploy from Github Actions" \
+            --output text \
+            --query "Command.CommandId"
