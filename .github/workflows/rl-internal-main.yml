@@ -1,0 +1,70 @@
+name: RL Internal Main
+
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - rl-internal/**
+      - .github/workflows/rl-internal-main.yml
+
+env:
+  IMAGE_CACHE_NAME: 146663730447.dkr.ecr.us-west-2.amazonaws.com/rocket-league-internal:build-cache
+
+jobs:
+  lint-and-format:
+    name: Lint and Format
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: rl-web
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install ruff
+        uses: astral-sh/ruff-action@v3
+        with:
+          version: ">=0.14.0"
+          args: "--version"
+
+      - name: Lint
+        run: ruff check
+
+      - name: Format
+        run: ruff format --check
+      
+  build-docker-image:
+    name: Build rl-internal Image
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Creds
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Docker Build & Push
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          context: ./rl-internal
+          cache-from: type=registry,ref=${{ env.IMAGE_CACHE_NAME }}
+          cache-to: type=registry,ref=${{ env.IMAGE_CACHE_NAME }}
