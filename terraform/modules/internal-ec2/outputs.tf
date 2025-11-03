@@ -7,3 +7,8 @@ output "internal_dns_record" {
   description = "DNS record for internal instances"
   value       = aws_route53_record.internal.name
 }
+
+output "ssh_private_key_pem" {
+  description = "private ssh key to connect to instances"
+  value       = tls_private_key.main.private_key_pem
+}

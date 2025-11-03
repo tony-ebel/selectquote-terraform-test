@@ -45,9 +45,3 @@ variable "internal_port" {
   description = "Port the internal RL service listens on"
   default     = 8500
 }
-
-variable "ssh_public_key" {
-  type        = string
-  description = "Public SSH Key used to connect to internal EC2 instances"
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMrf6OgocsPO9nNRdZZ8RLHC8Dd9PmDE9cgf4KCXxqMx tony@tCachy"
-}

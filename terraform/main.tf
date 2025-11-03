@@ -33,13 +33,19 @@ module "internal" {
   instance_count      = var.internal_instance_count
   instance_type       = var.internal_instance_type
   rocket_league_image = "${aws_ecr_repository.rocket_league_internal.repository_url}:latest"
-  ssh_public_key      = var.ssh_public_key
   web_sg_id           = module.web.web_sg_id
   port                = var.internal_port
 
   depends_on = [
     module.vpc
   ]
+}
+
+# Save ssh private key to local filesystem
+resource "local_file" "ssh_private_key_pem" {
+  content         = module.internal.ssh_private_key_pem
+  filename        = "ssh-private-key.pem"
+  file_permission = "0400"
 }
 
 module "alb" {

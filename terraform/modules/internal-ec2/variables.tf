@@ -33,11 +33,6 @@ variable "rocket_league_image" {
   description = "ecr rocket league internal image"
 }
 
-variable "ssh_public_key" {
-  type        = string
-  description = "ssh public key used to connect to EC2 instance as core user"
-}
-
 variable "web_sg_id" {
   type        = string
   description = "web security group id to allow ingress between ECS and EC2"

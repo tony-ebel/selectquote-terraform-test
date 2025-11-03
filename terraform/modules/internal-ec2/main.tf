@@ -27,9 +27,13 @@ data "aws_ami" "flatcar" {
 # SSH Keys #
 ############
 
+resource "tls_private_key" "main" {
+  algorithm = "ED25519"
+}
+
 resource "aws_key_pair" "ssh" {
   key_name   = "main-ssh"
-  public_key = var.ssh_public_key
+  public_key = tls_private_key.main.public_key_openssh
 }
 
 
