@@ -87,6 +87,14 @@ resource "aws_ecs_task_definition" "web" {
         }
       ]
 
+      healthcheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost:${var.ecs_container_port}${var.ecs_healthcheck_path} || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startperiod = 15
+      }
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -124,6 +132,12 @@ resource "aws_ecs_service" "web" {
     #container_port   = var.ecs_container_port
   #}
 
+  force_new_deployment = true
+
+  triggers = {
+    redeployment = plantimestamp()
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.ecs_task_execution
   ]
@@ -149,17 +163,8 @@ resource "aws_vpc_security_group_ingress_rule" "web_http" {
 
   cidr_ipv4   = "0.0.0.0/0"
   ip_protocol = "tcp"
-  from_port   = 80
-  to_port     = 80
-}
-
-resource "aws_vpc_security_group_ingress_rule" "web_https" {
-  security_group_id = aws_security_group.web.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  ip_protocol = "tcp"
-  from_port   = 443
-  to_port     = 443
+  from_port   = var.ecs_container_port
+  to_port     = var.ecs_container_port
 }
 
 resource "aws_vpc_security_group_ingress_rule" "ssh" {
@@ -169,6 +174,15 @@ resource "aws_vpc_security_group_ingress_rule" "ssh" {
   ip_protocol = "tcp"
   from_port   = 22
   to_port     = 22
+}
+
+resource "aws_vpc_security_group_egress_rule" "https_egress" {
+  security_group_id = aws_security_group.web.id
+
+  cidr_ipv4   = var.vpc_cidr
+  ip_protocol = "tcp"
+  from_port   = 443
+  to_port     = 443
 }
 
 resource "aws_security_group_rule" "alb_ingress" {

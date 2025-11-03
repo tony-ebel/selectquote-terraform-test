@@ -22,7 +22,7 @@ variable "ecs_container_port" {
   default     = 8500
 }
 
-variable "ecs_health_check_path" {
+variable "ecs_healthcheck_path" {
   type        = string
   description = "Path the ecs containers will listen for health checks"
   default     = "/status.html"

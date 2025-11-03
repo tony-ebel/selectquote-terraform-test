@@ -20,7 +20,7 @@ resource "aws_lb_target_group" "tg_web" {
   target_type = "ip"
 
   health_check {
-    path                = var.health_check_path
+    path                = var.healthcheck_path
     protocol            = "HTTP"
     matcher             = "200"
     interval            = 30

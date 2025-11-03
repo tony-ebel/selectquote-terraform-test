@@ -112,6 +112,11 @@ resource "aws_route_table_association" "private_subnet_association" {
   route_table_id = aws_route_table.private_route_table.id
 }
 
+
+#################
+# VPC Endpoints #
+#################
+
 data "aws_region" "current" {}
 
 locals {
@@ -140,6 +145,10 @@ locals {
       "name" : "com.amazonaws.${data.aws_region.current.region}.ecr.api",
       "type": "Interface"
     }
+    "cloudwatch" : {
+      "name" : "com.amazonaws.${data.aws_region.current.region}.logs",
+      "type": "Interface"
+    }
   }
 }
 
@@ -150,7 +159,7 @@ resource "aws_vpc_endpoint" "endpoints" {
   service_name        = each.value.name
   vpc_endpoint_type   = each.value.type
   security_group_ids  = each.value.type == "Interface" ? [aws_security_group.endpoints.id] : null
-  route_table_ids     = each.value.type == "Gateway" ? [aws_route_table.private_route_table.id] : null
+  route_table_ids     = each.value.type == "Gateway" ? [aws_route_table.private_route_table.id, aws_route_table.public_route_table.id] : null
   private_dns_enabled = each.value.type == "Interface" ? true : null
   ip_address_type     = "ipv4"
   subnet_ids          = each.value.type == "Interface" ? [aws_subnet.private_subnet.id] : null
@@ -169,7 +178,10 @@ resource "aws_security_group" "endpoints" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [aws_subnet.private_subnet.cidr_block]
+    cidr_blocks = concat(
+      [aws_subnet.private_subnet.cidr_block],
+      aws_subnet.public_subnet[*].cidr_block
+    )
   }
 
   egress {

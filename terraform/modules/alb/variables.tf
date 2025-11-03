@@ -13,7 +13,7 @@ variable "web_port" {
   description = "port the web containers will listen on"
 }
 
-variable "health_check_path" {
+variable "healthcheck_path" {
   type        = string
   description = "path the web containers will listen for health checks"
 }
