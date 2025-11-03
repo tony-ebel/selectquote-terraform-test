@@ -1,0 +1,42 @@
+name: Terraform Apply
+
+on:
+  workflow_dispatch:
+    
+
+jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      pull-requests: 'write'
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Creds
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ var.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.13.4"
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Tofu Apply
+        id: apply
+        run: tofu apply -no-color -auto-approve
+        continue-on-error: false

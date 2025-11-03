@@ -87,14 +87,6 @@ resource "aws_ecs_task_definition" "web" {
         }
       ]
 
-      healthcheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:${var.ecs_container_port}${var.ecs_healthcheck_path} || exit 1"]
-        interval    = 30
-        timeout     = 5
-        retries     = 3
-        startperiod = 15
-      }
-
       logConfiguration = {
         logDriver = "awslogs"
         options = {
