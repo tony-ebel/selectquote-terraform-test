@@ -132,12 +132,6 @@ resource "aws_ecs_service" "web" {
     #container_port   = var.ecs_container_port
   #}
 
-  force_new_deployment = true
-
-  triggers = {
-    redeployment = plantimestamp()
-  }
-
   depends_on = [
     aws_iam_role_policy_attachment.ecs_task_execution
   ]
