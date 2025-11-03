@@ -20,7 +20,7 @@ def status():
     <body>
         <h1>Health Check</h1>
         <p><strong>Status:</strong> OK</p>
-        <p>The service is up and running.</p>
+        <p>The rl-internal service is up and running.</p>
     </body>
     </html>
     """

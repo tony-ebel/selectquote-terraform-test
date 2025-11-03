@@ -55,7 +55,7 @@ def status():
     <body>
         <h1>Health Check</h1>
         <p><strong>Status:</strong> OK</p>
-        <p>The Rocket League web service is up and running.</p>
+        <p>The rl-web service is up and running.</p>
     </body>
     </html>
     """
