@@ -3,8 +3,6 @@ name: RL Internal Deploy
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
 
@@ -44,7 +42,7 @@ jobs:
       - name: Get EC2 Details
         id: getdetails
         run: |
-          instanceids=$(tofu output -raw internal_instance_ids)
+          instanceids=$(terraform output -raw internal_instance_ids)
           echo "instanceids=${instanceids}" >> $GITHUB_OUTPUT
 
   deploy-ec2:
