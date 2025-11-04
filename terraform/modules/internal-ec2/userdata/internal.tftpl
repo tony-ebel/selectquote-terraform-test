@@ -1,87 +1,91 @@
-variant: flatcar
-version: 1.0.0
+#!/bin/bash
 
-systemd:
-  units:
-    - name: docker.service
-      enabled: true
+# Create systemd unit files
 
-    - name: rocket-league.service
-      enabled: true
-      contents: |
-        [Unit]
-        After=docker.service ecr-docker-login.service
-        Requires=docker.service ecr-docker-login.service
+cat <<EOF > /etc/systemd/system/rocket-league.service
+[Unit]
+After=docker.service ecr-docker-login.service
+Requires=docker.service ecr-docker-login.service
 
-        [Service]
-        Environment="IMAGE=${IMAGE}"
-        Environment="ENVIRONMENT=${ENVIRONMENT}"
-        ExecStartPre=-/usr/bin/docker pull $${IMAGE}
-        ExecStartPre=-/usr/bin/docker rm -fv %p
-        ExecStart=/usr/bin/docker run \
-                                  --name %p \
-                                  --net host \
-                                  -e ENVIRONMENT=$${ENVIRONMENT} \
-                                  $${IMAGE}
+[Service]
+Environment="IMAGE=${IMAGE}"
+Environment="ENVIRONMENT=${ENVIRONMENT}"
+ExecStartPre=-/usr/bin/docker pull $${IMAGE}
+ExecStartPre=-/usr/bin/docker rm -fv %p
+ExecStart=/usr/bin/docker run \
+                          --name %p \
+                          --net host \
+                          -e ENVIRONMENT=$${ENVIRONMENT} \
+                          $${IMAGE}
 
-        ExecStop=/usr/bin/docker stop %p
-        TimeoutStartSec=180
+ExecStop=/usr/bin/docker stop %p
+TimeoutStartSec=180
 
-        [Install]
-        WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
+EOF
 
-    - name: ecr-docker-login.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=setup docker-credential-ecr-login helper
-        Documentation=file://opt/bin/ecr-docker-login.sh
-        After=docker.service network-online.target
-        Requires=docker.service network-online.target
-        ConditionPathExists=!/opt/bin/docker-credential-ecr-login
+cat <<EOF > /etc/systemd/system/ecr-docker-login.service
+[Unit]
+Description=setup docker-credential-ecr-login helper
+Documentation=file://opt/bin/ecr-docker-login.sh
+After=docker.service network-online.target
+Requires=docker.service network-online.target
+ConditionPathExists=!/opt/bin/docker-credential-ecr-login
 
-        [Service]
-        Type=oneshot
-        ExecStart=/opt/bin/ecr-docker-login.sh
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/ecr-docker-login.sh
 
-        [Install]
-        WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
+EOF
 
-storage:
-  files:
-    - path: /etc/flatcar/update.conf
-      overwrite: true
-      contents:
-        inline: |
-          REBOOT_STRATEGY=reboot
-          LOCKSMITHD_REBOOT_WINDOW_START="Thu 04:00"
-          LOCKSMITHD_REBOOT_WINDOW_LENGTH=1h
-      mode: 0420
 
-    - path: /opt/bin/ecr-docker-login.sh
-      mode: 0744
-      contents:
-        inline: |
-          #!/bin/bash
-          VERSION=0.10.1
-          OS=linux
-          ARCH=amd64
-          FILEPATH=/opt/bin/docker-credential-ecr-login
+# Add custom files
 
-          curl -fsSLo $${FILEPATH} "https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/$${VERSION}/$${OS}-$${ARCH}/docker-credential-ecr-login"
-          chmod 744 $${FILEPATH}
+mkdir /opt/bin
+cat <<EOF > /opt/bin/ecr-docker-login.sh
+#!/bin/bash
+VERSION=0.10.1
+OS=linux
+ARCH=amd64
+FILEPATH=/opt/bin/docker-credential-ecr-login
 
-    - path: /etc/systemd/system.conf.d/10-default-env.conf
-      mode: 0644
-      contents:
-        inline: |
-          [Manager]
-          DefaultEnvironment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bin
+curl -fsSLo ${FILEPATH} "https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/${VERSION}/${OS}-${ARCH}/docker-credential-ecr-login"
+chmod 744 ${FILEPATH}
+EOF
 
-    - path: /root/.docker/config.json
-      mode: 0644
-      contents:
-        inline: |
-          {
-            "credsStore": "ecr-login"
-          }
+chmod 744 /opt/bin/ecr-docker-login.sh
+
+
+mkdir /etc/systemd/system.conf.d/
+cat <<EOF > /etc/systemd/system.conf.d/10-default-env.conf
+[Manager]
+DefaultEnvironment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bin
+EOF
+
+chmod 644 /etc/systemd/system.conf/10-default-env.conf
+
+
+mkdir /root/.docker/
+cat <<EOF > /root/.docker/config.json
+{
+  "credsStore": "ecr-login"
+}
+EOF
+
+chmod 644 /root/.docker/config.json
+
+
+
+# Enable and start systemd services
+
+systemctl daemon-reload
+systemctl enable docker.service
+systemctl enable rocket-league.service
+systemctl enable ecr-docker-login.service
+
+systemctl start docker.service ecr-docker-login.service rocket-league.service
+
+echo "user-data script completed successfully!"
