@@ -18,8 +18,8 @@ def stream_response():
 
         if internal_response.status_code == 200:
             print("LOG: Internal connection check successful (HTTP 200).")
-            yield "Internal connection successful (HTTP 200). Sending final data payload.\n"
-            yield "Final status: READY.\n"
+            yield internal_response.text
+            yield "Final status: READY FOR KICKOFF!.\n"
         else:
             print(f"LOG: Internal connection check failed (HTTP {internal_response.status_code}).")
             yield f"Backend service check failed. Received unexpected status code: {internal_response.status_code}.\n"
@@ -55,7 +55,7 @@ def status():
     <body>
         <h1>Health Check</h1>
         <p><strong>Status:</strong> OK</p>
-        <p>The Rocket League web service is up and running.</p>
+        <p>The rl-web service is up and running.</p>
     </body>
     </html>
     """
