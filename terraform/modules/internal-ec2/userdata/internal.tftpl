@@ -52,8 +52,8 @@ OS=linux
 ARCH=amd64
 FILEPATH=/opt/bin/docker-credential-ecr-login
 
-curl -fsSLo ${FILEPATH} "https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/${VERSION}/${OS}-${ARCH}/docker-credential-ecr-login"
-chmod 744 ${FILEPATH}
+curl -fsSLo $${FILEPATH} "https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/$${VERSION}/$${OS}-$${ARCH}/docker-credential-ecr-login"
+chmod 744 $${FILEPATH}
 EOF
 
 chmod 744 /opt/bin/ecr-docker-login.sh
@@ -86,6 +86,7 @@ systemctl enable docker.service
 systemctl enable rocket-league.service
 systemctl enable ecr-docker-login.service
 
-systemctl start docker.service ecr-docker-login.service rocket-league.service
+systemctl start docker.service ecr-docker-login.service
+systemctl start rocket-league.service
 
 echo "user-data script completed successfully!"
