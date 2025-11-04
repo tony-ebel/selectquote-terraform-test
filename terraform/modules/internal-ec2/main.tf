@@ -118,10 +118,6 @@ resource "aws_instance" "internal" {
   tags = {
     Name = "internal-${count.index}"
   }
-
-  lifecycle {
-    ignore_changes = [ami]
-  }
 }
 
 
