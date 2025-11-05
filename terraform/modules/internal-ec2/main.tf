@@ -2,9 +2,9 @@
 # AMI #
 #######
 
-data "aws_ami" "flatcar" {
+data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["aws-marketplace"]
+  owners      = ["099720109477"] # Canonical's Account ID
 
   filter {
     name   = "architecture"
@@ -18,7 +18,7 @@ data "aws_ami" "flatcar" {
 
   filter {
     name   = "name"
-    values = ["Flatcar-stable-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server*"]
   }
 }
 
@@ -86,12 +86,6 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
-data "ct_config" "internal" {
-  content      = data.template_file.internal.rendered
-  strict       = true
-  pretty_print = true
-}
-
 data "template_file" "internal" {
   template = file("${path.module}/userdata/internal.tftpl")
 
@@ -112,8 +106,8 @@ resource "aws_instance" "internal" {
   count = var.instance_count
 
   instance_type        = var.instance_type
-  ami                  = data.aws_ami.flatcar.image_id
-  user_data            = data.ct_config.internal.rendered
+  ami                  = data.aws_ami.ubuntu.image_id
+  user_data            = data.template_file.internal.rendered
   iam_instance_profile = aws_iam_instance_profile.internal.name
   key_name             = aws_key_pair.ssh.key_name
 
@@ -123,10 +117,6 @@ resource "aws_instance" "internal" {
 
   tags = {
     Name = "internal-${count.index}"
-  }
-
-  lifecycle {
-    ignore_changes = [ami]
   }
 }
 
